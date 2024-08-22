@@ -1,0 +1,89 @@
+services:
+  ai-core:
+    build: ./ai-core
+    container_name: ai-core
+    depends_on:
+      - mosquitto
+    networks:
+      - core-network
+    environment:
+      - HOST=mosquitto
+      - PORT=1884
+      - CLIENT_NAME=ai-client
+      - PUBLISHER_NAME=ai-publisher
+      - KEEP_ALIVE=60
+      - REQ_TOPIC=/ai
+      - RES_TOPIC=/tts
+      - GOOGLE_API_KEY=AIzaSyCClkGtSBswzvxnPcIR6d6C-ldjfTI_i6s
+
+  schedule-core:
+    build: ./schedule-core
+    container_name: schedule-core
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mosquitto
+    networks:
+      - core-network
+    environment:
+      - HOST=mosquitto
+      - PORT=1884
+      - CLIENT_NAME=schedule-core
+      - PUBLISHER_NAME=schedule-publisher
+      - KEEP_ALIVE=60
+      - REQ_TOPIC=/schedule
+      - RES_TOPIC=/luna
+      - BD_USER=postgres
+      - BD_PASSWORD=postgres
+      - BD_HOST=postgres
+      - BD_PORT=5432
+      - BD_NAME=luna
+      - FLASK_APP=server.py
+      - TOKEN=token
+
+  history-core:
+    build: ./history-core
+    container_name: history-core
+    depends_on:
+      - mosquitto
+    networks:
+      - core-network
+    environment:
+      - HOST=mosquitto
+      - PORT=1884
+      - CLIENT_NAME=history-client
+      - PUBLISHER_NAME=history-publisher
+      - KEEP_ALIVE=60
+      - REQ_TOPIC=/history
+      - RES_TOPIC=/history/message
+      - BD_USER=postgres
+      - BD_PASSWORD=postgres
+      - BD_HOST=postgres
+      - BD_PORT=5432
+      - BD_NAME=luna
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1884:1884"
+    networks:
+      - core-network
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_DB: luna
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - core-network
+    ports:
+      - "5432:5432"
+
+networks:
+  core-network:
+    driver: bridge

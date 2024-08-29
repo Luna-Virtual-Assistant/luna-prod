@@ -1,4 +1,14 @@
 services:
+  # web-core:
+  #   build: ./web-core
+  #   container_name: web-core
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mosquitto
+  #   networks:
+  #     - core-network
+
   ai-core:
     build: ./ai-core
     container_name: ai-core
@@ -23,6 +33,7 @@ services:
       - "5000:5000"
     depends_on:
       - mosquitto
+      - postgres
     networks:
       - core-network
     environment:
@@ -46,6 +57,7 @@ services:
     container_name: history-core
     depends_on:
       - mosquitto
+      - postgres
     networks:
       - core-network
     environment:
@@ -69,6 +81,8 @@ services:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     ports:
       - "1884:1884"
+      - "8884:8884"
+
     networks:
       - core-network
 

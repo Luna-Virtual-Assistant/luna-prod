@@ -1,19 +1,23 @@
 services:
-  # web-core:
-  #   build: ./web-core
-  #   container_name: web-core
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - mosquitto
-  #   networks:
-  #     - core-network
+  web-core:
+    build: ./web-core
+    container_name: web-core
+    ports:
+      - "3000:3000"
+    depends_on:   
+      postgres:
+          condition: service_healthy   
+      mosquitto:
+          condition: service_started
+    networks:
+      - core-network
 
   ai-core:
     build: ./ai-core
     container_name: ai-core
-    depends_on:
-      - mosquitto
+    depends_on:   
+      mosquitto:
+          condition: service_started
     networks:
       - core-network
     environment:
@@ -31,9 +35,11 @@ services:
     container_name: schedule-core
     ports:
       - "5000:5000"
-    depends_on:
-      - mosquitto
-      - postgres
+    depends_on:   
+      postgres:
+          condition: service_healthy   
+      mosquitto:
+          condition: service_started
     networks:
       - core-network
     environment:
@@ -55,9 +61,11 @@ services:
   history-core:
     build: ./history-core
     container_name: history-core
-    depends_on:
-      - mosquitto
-      - postgres
+    depends_on:   
+      postgres:
+          condition: service_healthy   
+      mosquitto:
+          condition: service_started
     networks:
       - core-network
     environment:
@@ -77,6 +85,9 @@ services:
   pghero:
     image: ankane/pghero
     container_name: pghero
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
@@ -92,12 +103,17 @@ services:
     ports:
       - "1884:1884"
       - "8884:8884"
-
     networks:
       - core-network
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "healthcheck", "-m", "test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: postgres:13
+    restart: always
     container_name: postgres
     environment:
       POSTGRES_DB: luna
@@ -107,6 +123,12 @@ services:
       - core-network
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 networks:
   core-network:

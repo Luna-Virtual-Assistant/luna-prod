@@ -1,0 +1,24 @@
+[submodule "ai-core"]
+	path = ai-core
+	url = https://github.com/Luna-Virtual-Assistant/ai-core
+[submodule "schedule-core"]
+	path = schedule-core
+	url = https://github.com/Luna-Virtual-Assistant/schedule-core
+[submodule "luna"]
+	path = luna
+	url = https://github.com/Luna-Virtual-Assistant/luna
+[submodule "whatsapp-core"]
+	path = whatsapp-core
+	url = https://github.com/Luna-Virtual-Assistant/whatsapp-core
+[submodule "history-core"]
+	path = history-core
+	url = https://github.com/Luna-Virtual-Assistant/history-core
+[submodule "tts-core"]
+	path = tts-core
+	url = https://github.com/Luna-Virtual-Assistant/tts-core
+[submodule "sr-core"]
+	path = sr-core
+	url = https://github.com/Luna-Virtual-Assistant/sr-core
+[submodule "web-core"]
+	path = web-core
+	url = https://github.com/Luna-Virtual-Assistant/web-core

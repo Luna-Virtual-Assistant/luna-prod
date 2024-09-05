@@ -25,9 +25,36 @@ jobs:
     - name: Set up Docker Compose
       run: sudo apt-get update && sudo apt-get install -y docker-compose
 
-    - name: Build and test Docker Compose
+    - name: Build and start Docker Compose
       run: |
         docker compose -f docker-compose.yml build
         docker compose -f docker-compose.yml up -d
         docker compose -f docker-compose.yml ps
+
+    - name: Wait for Docker Compose services to be ready
+      run: sleep 30  # Adjust this sleep duration as needed
+
+    - name: Install Python dependencies for Luna
+      run: |
+        python3 -m venv venv_luna
+        source venv_luna/bin/activate
+        pip install -r luna/requirements.txt
+        nohup python luna/main.py &
+
+    - name: Install Python dependencies for TTS
+      run: |
+        python3 -m venv venv_tts
+        source venv_tts/bin/activate
+        pip install -r tts-core/requirements.txt
+        nohup python tts-core/main.py &
+
+    - name: Install Python dependencies for SR
+      run: |
+        python3 -m venv venv_sr
+        source venv_sr/bin/activate
+        pip install -r sr-core/requirements.txt
+        nohup python sr-core/main.py &
+
+    - name: Bring down Docker Compose
+      run: |
         docker compose -f docker-compose.yml down

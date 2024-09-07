@@ -50,6 +50,8 @@ jobs:
 
     - name: Install Python dependencies for SR
       run: |
+        sudo apt-get update
+        sudo apt-get install -y portaudio19-dev
         python3 -m venv venv_sr
         source venv_sr/bin/activate
         pip install -r sr-core/requirements.txt

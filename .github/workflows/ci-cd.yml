@@ -56,6 +56,12 @@ jobs:
         source venv_sr/bin/activate
         pip install -r sr-core/requirements.txt
         nohup python sr-core/main.py &
+        
+    - name: Run integration test for Schedule-Core
+      run: |
+          sudo apt-get install -y python3-pip
+          pip install requests 
+          python3 tests/test-schedule.py
 
     - name: Bring down Docker Compose
       run: |

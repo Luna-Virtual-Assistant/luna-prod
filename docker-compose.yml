@@ -116,6 +116,7 @@ services:
     restart: always
     container_name: postgres
     environment:
+      PGUSER: postgres
       POSTGRES_DB: luna
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
